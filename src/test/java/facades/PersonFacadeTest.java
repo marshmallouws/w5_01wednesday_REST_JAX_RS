@@ -32,7 +32,7 @@ public class PersonFacadeTest {
                 "jdbc:mysql://localhost:3307/w5_03persons_test",
                 "dev",
                 "ax2",
-                EMF_Creator.Strategy.CREATE);
+                EMF_Creator.Strategy.DROP_AND_CREATE);
         facade = PersonFacade.getPersonFacade(emf);
     }
 
@@ -79,7 +79,8 @@ public class PersonFacadeTest {
     //Get person by ID
     @Test
     public void testGetPerson() {
-        
+        Person p = facade.getPerson(1);
+        assertNotNull(p);
     }
     
     // Get all persons

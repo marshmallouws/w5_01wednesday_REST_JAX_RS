@@ -19,7 +19,7 @@ public class Person implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;        
+    private int id;        
     private String firstname;
     private String lastname;
     private String phone;
@@ -38,11 +38,11 @@ public class Person implements Serializable {
         created = Calendar.getInstance().getTime();
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

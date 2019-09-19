@@ -34,21 +34,17 @@ public class PersonResource {
         return "{\"msg\":\"Hello World\"}";
     }
     
-    @Path("all")
+    @Path("/all")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public String getAllPersons() {
         return new Gson().toJson(FACADE.getAllPersons());
     }
     
-    /*@Path("count")
+    @Path("/{id}") 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public String getRenameMeCount() {
-        long count = FACADE.getRenameMeCount();
-        //System.out.println("--------------->"+count);
-        return "{\"count\":"+count+"}";  //Done manually so no need for a DTO
-    }*/
-
- 
+    public String getPersonFromId(@PathParam("id") int id) {
+        return new Gson().toJson(FACADE.getPerson(id));
+    }
 }
