@@ -3,6 +3,8 @@ package rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import entities.Person;
+import exceptions.PersonNotFoundException;
+import exceptions.PersonNotFoundExceptionMapper;
 import utils.EMF_Creator;
 import facades.PersonFacade;
 import javax.persistence.EntityManagerFactory;
@@ -47,8 +49,13 @@ public class PersonResource {
     @Path("/{id}") 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public String getPersonFromId(@PathParam("id") int id) {
-        return new Gson().toJson(FACADE.getPerson(id));
+    public Response getPersonFromId(@PathParam("id") int id) throws PersonNotFoundException {
+        try {
+            Person p = FACADE.getPerson(id);
+            return Response.ok().entity(new Gson().toJson(p)).type(MediaType.APPLICATION_JSON).build();
+        } catch (PersonNotFoundException e) {
+            return new PersonNotFoundExceptionMapper().toResponse(e);
+        }
     }
     
     @Path("/new")
@@ -60,11 +67,11 @@ public class PersonResource {
         return Response.ok(p).build();
     }
     
-    //Should be updated so that one cannot update the id
+    // Method should be updated so that one cannot update the id
     @Path("/update/{id}")
     @PUT
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response editPerson(String person) {
+    public Response editPerson(String person) throws PersonNotFoundException {
         Person p = GSON.fromJson(person, Person.class);
         FACADE.editPerson(p);
         return Response.ok(p).build();
@@ -74,8 +81,11 @@ public class PersonResource {
     @DELETE
     @Produces({MediaType.APPLICATION_JSON})
     public Response deletePerson(@PathParam("id") int id) {
-        Person p = FACADE.deletePerson(id);
-        return Response.ok(p).build();
+        try {
+            Person p = FACADE.deletePerson(id);
+            return Response.ok().entity(new Gson().toJson(p)).type(MediaType.APPLICATION_JSON).build();
+        } catch (PersonNotFoundException e) {
+            return new PersonNotFoundExceptionMapper().toResponse(e);
+        }
     }
-
 }
