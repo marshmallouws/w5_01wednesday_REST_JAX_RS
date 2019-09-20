@@ -7,6 +7,7 @@ import utils.EMF_Creator;
 import facades.PersonFacade;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -14,6 +15,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 
 //Todo Remove or change relevant parts before ACTUAL use
 @Path("persons")
@@ -21,7 +24,7 @@ public class PersonResource {
 
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory(
                 "pu",
-                "jdbc:mysql://localhost:3307/startcode",
+                "jdbc:mysql://localhost:3307/w5_03persons",
                 "dev",
                 "ax2",
                 EMF_Creator.Strategy.CREATE);
@@ -47,4 +50,32 @@ public class PersonResource {
     public String getPersonFromId(@PathParam("id") int id) {
         return new Gson().toJson(FACADE.getPerson(id));
     }
+    
+    @Path("/new")
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response addPerson(String person) {
+        Person p = GSON.fromJson(person, Person.class); //manual conversion
+        FACADE.addPerson(p.getFirstname(), p.getLastname(), p.getPhone());
+        return Response.ok(p).build();
+    }
+    
+    //Should be updated so that one cannot update the id
+    @Path("/update/{id}")
+    @PUT
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response editPerson(String person) {
+        Person p = GSON.fromJson(person, Person.class);
+        FACADE.editPerson(p);
+        return Response.ok(p).build();
+    }
+    
+    @Path("/delete/{id}")
+    @DELETE
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response deletePerson(@PathParam("id") int id) {
+        Person p = FACADE.deletePerson(id);
+        return Response.ok(p).build();
+    }
+
 }

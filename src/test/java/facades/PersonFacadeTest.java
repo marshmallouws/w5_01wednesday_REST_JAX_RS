@@ -77,9 +77,9 @@ public class PersonFacadeTest {
     }
     
     //Get person by ID
-    @Test
+    //@Test
     public void testGetPerson() {
-        Person p = facade.getPerson(1);
+        Person p = facade.getPerson(4);
         assertNotNull(p);
     }
     
@@ -104,5 +104,17 @@ public class PersonFacadeTest {
         }
         
         assertTrue(found);
+    }
+    
+    @Test
+    public void testAddPerson() {
+        String firstname = "Henrik";
+        String lastname = "Henriksen";
+        String phone = "6666";
+        
+        facade.addPerson(firstname, lastname, phone);
+        long count = facade.getPersonCount();
+        
+        assertEquals(4, count);
     }
 }

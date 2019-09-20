@@ -15,13 +15,13 @@ public class PersonFacade {
 
     private static PersonFacade instance;
     private static EntityManagerFactory emf;
-    
+
     //Private Constructor to ensure Singleton
-    private PersonFacade() {}
-    
-    
+    private PersonFacade() {
+    }
+
     /**
-     * 
+     *
      * @param _emf
      * @return an instance of this facade class.
      */
@@ -36,7 +36,18 @@ public class PersonFacade {
     private EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
-    
+
+    public long getPersonCount() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            long personCount = (long) em.createQuery("SELECT COUNT(r) FROM Person r").getSingleResult();
+            return personCount;
+        } finally {
+            em.close();
+        }
+
+    }
+
     public Person addPerson(String fName, String lName, String phone) {
         EntityManager em = getEntityManager();
         Person p = new Person(fName, lName, phone);
@@ -78,7 +89,7 @@ public class PersonFacade {
     public List<Person> getAllPersons() {
         EntityManager em = getEntityManager();
         try {
-            TypedQuery<Person> query 
+            TypedQuery<Person> query
                     = em.createQuery("SELECT p FROM Person p", Person.class);
             return query.getResultList();
         } finally {
@@ -87,6 +98,23 @@ public class PersonFacade {
     }
 
     public Person editPerson(Person p) {
-        return null;
+        p.setLastEdited();
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            TypedQuery<Person> query
+                    = em.createQuery("UPDATE Person p SET p.firstname = :firstname, p.lastname = :lastname, p.phone = :phone, p.lastEdited = :last  WHERE p.id = :id", Person.class);
+            query.setParameter("firstname", p.getFirstname());
+            query.setParameter("lastname", p.getLastname());
+            query.setParameter("phone", p.getPhone());
+            query.setParameter("last", p.getLastEdited());
+            query.setParameter("id", p.getId());
+            query.executeUpdate();
+            em.getTransaction().commit();
+            
+        } finally {
+            em.close();
+        }
+        return p;
     }
 }
